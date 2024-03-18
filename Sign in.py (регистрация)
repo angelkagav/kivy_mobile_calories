@@ -1,3 +1,5 @@
+#Это код для страницы, которую пользователь должен видеть в начале, он должен ввести свой логин и пароль ( она нуждается в доработке )
+
 from kivymd.app import MDApp
 from kivy.uix.screenmanager import Screen
 from kivymd.uix.card import MDCard
@@ -13,7 +15,7 @@ class Myapp(MDApp):
 
 if __name__ == "__main__":
     Myapp().run()
-# этот код нужно вставить в другой файл .kv
+
 Builder.load_string("""
 <MyScreen>:
     md_bg_color: [35/255,59/255,54/255,1]
