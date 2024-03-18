@@ -1,0 +1,162 @@
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.label import Label
+from kivy.uix.screenmanager import Screen, ScreenManager
+import sqlite3
+
+
+class Product:
+    def __init__(self, name, calories):
+        self.name = name
+        self.calories = calories
+
+
+class ProductsPage(Screen):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        layout = BoxLayout(orientation="vertical")
+        self.products_label = Label(text="")
+
+        layout.add_widget(self.products_label)
+        self.add_widget(layout)
+
+    def set_products(self, products):
+        text = ""
+        for product in products:
+            text += f"{product.name}: {product.calories} ккал\n"
+        self.products_label.text = text
+
+
+class MyApp(App):
+    def build(self):
+        sm = ScreenManager()
+
+        # Создание и подключение к базе данных
+        connection = sqlite3.connect(":memory:")
+        cursor = connection.cursor()
+
+        # Создание таблицы продуктов
+        cursor.execute("CREATE TABLE products (name TEXT, calories INTEGER)")
+
+        # Запись данных в базу данных
+        products_data = [
+            ("Яблоко", 52),
+            ("Банан", 96),
+            ("Апельсин", 43),
+            ("Молоко", 60),
+            ("Хлеб", 240),
+            ("Сыр", 400),
+            ("Яйца", 155),
+            ("Куриная грудка", 165),
+            ("Лосось", 206),
+            ("Брокколи", 55),
+            ("Шпинат", 23),
+            ("Авокадо", 160),
+            ("Миндаль", 576),
+            ("Греческий йогурт", 59),
+            ("Овсянка", 68),
+            ("Морковь", 41),
+            ("Сливочное масло", 717),
+            ("Салат", 14),
+            ("Тунец", 116),
+            ("Обезжиренное молоко", 35),
+            ("Персик", 39),
+            ("Грейпфрут", 32),
+            ("Голень куриная", 202),
+            ("Салат айсберг", 14),
+            ("Сельдерей", 16),
+            ("Чернослив", 239),
+            ("Томат", 18),
+            ("Киноа", 368),
+            ("Кукурузные хлопья", 365),
+            ("Лук", 40),
+            ("Грибы шампиньоны", 27),
+            ("Чай зеленый", 1),
+            ("Гречневая крупа", 335),
+            ("Говядина", 250),
+            ("Огурец", 15),
+            ("Кабачок", 20),
+            ("Лимон", 29),
+            ("Красная рыба", 231),
+            ("Малина", 52),
+            ("Чеснок", 149),
+            ("Хурма", 81),
+            ("Ягоды черники", 47),
+            ("Творог", 154),
+            ("Яйцо куриное", 157),
+            ("Молоко кокосовое", 230),
+            ("Картофель", 77),
+            ("Рис", 130),
+            ("Оливковое масло", 884),
+            ("Манго", 60),
+            ("Черешня", 52),
+            ("Петрушка", 36),
+            ("Арахисовое масло", 884),
+            ("Лосось гриль", 206),
+            ("Миндальная паста", 609),
+            ("Сметана", 292),
+            ("Маринованные огурцы", 20),
+            ("Сливки", 134),
+            ("Творог 9%", 152),
+            ("Крабовые палочки", 104),
+            ("Свинина", 242),
+            ("Вишня", 52),
+            ("Брокколи запеченная", 55),
+            ("Киви", 47),
+            ("Перец сладкий", 27),
+            ("Картофель жареный", 319),
+            ("Оливки", 115),
+            ("Сосиски", 301),
+            ("Клубника", 32),
+            ("Творог 0%", 68),
+            ("Макароны", 371),
+            ("Кешью", 574),
+            ("Салями", 504),
+            ("Вареное яйцо", 153),
+            ("Молоко соевое", 36),
+            ("Говяжий стейк", 250),
+            ("Куриное филе", 161),
+            ("Клюква", 28),
+            ("Шампиньоны жареные", 22),
+            ("Соя", 446),
+            ("Мандарин", 33),
+            ("Брусника", 35),
+            ("Редис", 16),
+            ("Рататуй", 50),
+            ("Помидор черри", 18),
+            ("Говяжий гуляш", 161),
+            ("Кускус", 364),
+            ("Помидор", 20),
+            ("Горох", 81),
+            ("Паста", 130),
+            ("Чебурек", 350),
+            ("Мюсли без сахара", 367)
+        ]
+        
+        cursor.executemany("INSERT INTO products (name, calories) VALUES (?, ?)", products_data)
+
+        # Сохранение изменений в базе данных
+        connection.commit()
+
+        # Получение данных из базы данных
+        cursor.execute("SELECT name, calories FROM products")
+        rows = cursor.fetchall()
+        products = []
+        for row in rows:
+            product = Product(row[0], row[1])
+            products.append(product)
+
+        # Создание экрана для отображения списка продуктов
+        products_page = ProductsPage(name="ProductsPage")
+        products_page.set_products(products)
+        sm.add_widget(products_page)
+
+        # Закрытие соединения с базой данных
+        connection.close()
+
+        return sm
+
+
+if __name__ == "__main__":
+    MyApp().run()
