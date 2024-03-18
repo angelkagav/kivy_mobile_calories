@@ -1,3 +1,6 @@
+#Это код начальной страницы, где пользователь должен ввести свои параметры (рост, вес, пол и тд)
+
+
 from kivy.app import App
 from kivy.uix.button import Button
 from kivy.uix.label import Label
